@@ -2,16 +2,7 @@ const server = require('express')();
 const bodyParser = require('body-parser');
 const cors = require('cors')
 const router = require('./app/routes/post');
-const Sequelize = require ('sequelize');
-const sequelize = new  Sequelize('mysql://zmuIZMfIcW:nBGMqiRUM1@remotemysql.com:3306/zmuIZMfIcW'); 
 
-
-
-addUser = (req, res, next) => {
-    const query = 'INSERT INTO clients (user, pass) VALUES ("algo", "asd123")';
-    const resultados = sequelize.query(query, { raw: true});
-    
-}
 
 server.use(cors())
 server.use(bodyParser.json())
@@ -21,7 +12,7 @@ server.post("/productos");
 server.delete("/productos");
 server.put("/productos"); */
 
-
+require('./db')
 server.use(router);
 
 
