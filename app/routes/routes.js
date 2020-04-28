@@ -1,11 +1,11 @@
 const router = require('express').Router();
-const {checkUser, authenticateUser, registerUser} = require('../controllers/post');
+const {loginUser, authenticateUser, registerUser, verifyToken} = require('../controllers/accounts');
 
 router.post('/register', registerUser);
 
-router.post('/login', checkUser);
+router.post('/login', loginUser);
 
-router.post('/secure', authenticateUser, (req, res) => res.end());
+router.post('/secure', authenticate, (req, res) => res.end());
 
 router.get('/health', (req, res) => {
     res.status(200).send({ code: 'OK', message: `API up and running` });

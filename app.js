@@ -1,7 +1,7 @@
 const server = require('express')();
 const bodyParser = require('body-parser');
 const cors = require('cors')
-const router = require('./app/routes/post');
+const router = require('./app/routes/routes');
 const displayRoutes = require('express-routemap');
 
 
