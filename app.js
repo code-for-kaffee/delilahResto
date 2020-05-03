@@ -8,20 +8,14 @@ const displayRoutes = require('express-routemap');
 server.use(cors())
 server.use(bodyParser.json())
 
-/* server.get("/productos");
-server.post("/productos");
-server.delete("/productos");
-server.put("/productos"); */
+server.get("/products");
+server.post("/products");
+server.delete("/products/:id");
+server.put("/products"); 
 
-require('./app/db/db')
+require('./app/db/db');
 server.use(router);
 
-
-/* 
-server.get("/secure", authenticateUser, (req, res) => {
-    res.send(`esta es una pagina autenticada, hola${JSON.stringify(req.user)}`)
-
-}) */
 
 const port = 3000;
 server.listen(port, () => {

@@ -14,14 +14,15 @@ module.exports.registerUser = (req, res, next) => {
                 estado: 'Se registró correctamente el usuario'
             }
             return res.status(200).send({ code: 'OK', message: `${response.estado}` });;
-        } catch (err) {
-            throw err
+        } catch (e) {
+            throw res.status(409
+                ).send({error: 'Username or email duplicated'})
         }
     };
     const registroUsuario = async (user) => {
         const registro = sequelize.query(
-            `INSERT INTO clients (username, fullname, email, phone, adress, password) 
-            VALUES('${user.username}', '${user.fullname}', '${user.email}', '${user.phone}', '${user.adress}', '${user.password}')`,
+            `INSERT INTO clients (username, fullname, email, phone, address, password) 
+            VALUES('${user.username}', '${user.fullname}', '${user.email}', '${user.phone}', '${user.address}', '${user.password}')`,
             { type: QueryTypes.INSERT });
         return registro;
     }
@@ -29,43 +30,37 @@ module.exports.registerUser = (req, res, next) => {
 };
 
 
-module.exports.loginUser = (req, res, next) => {
+module.exports.loginUser = (req, res) => {
     const { username, password } = req.body;
-    console.log(username + " " + password)
-    const validate = validateUsers(username, password);
+     const validate = validateUsers(username, password);
     console.log(validate)
-    if (!validate) {
+   if (!validate) {
         res.json({ error: 'No existe el usuario o contraseña incorrecta' });
         return;
     }
     const token = jwt.sign({
         username
     }, 'newPassword');
-    res.json({ token })
+
+    res.status(200).json({ token })
 }
 module.exports.authenticate = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(' ')[1];
-        const verifyToken = jwt.verify(token, "newPassword");
-        if (verifyToken) {
-            req.user = verifyToken;
+        const user = jwt.verify(token, "newPassword");
+        if (user) {
+            req.user = user;
             return next();
         }
     } catch (err) {
-        res.json({ error: "Error al validar usuario" })
+        res.status(401).json({ error: "Error al validar usuario o contraseña" })
     }
-
 }
 
 
-validateUsers = () => {
-    sequelize.authenticate().then(async () => {
-        const query = 'SELECT * FROM clients';
-        console.log(query)
-        const resultados = await sequelize.query(query, { raw: false });
-        return resultados;
-    })
-     const [filterUsers] = resultados.filter(fila => fila.user === user && fila.password === password);
+validateUsers = async (username, password) => {
+    const users = sequelize.query('SELECT * FROM clients', { type : QueryTypes.SELECT});
+    const [filterUsers] = await users.filter(fila => fila.username === username && fila.password === password);
     if (!filterUsers) {
         return false;
     }

@@ -1,14 +1,15 @@
 const router = require('express').Router();
-const {loginUser, authenticateUser, registerUser, verifyToken} = require('../controllers/accounts');
+const {loginUser, authenticate, registerUser, verifyToken} = require('../controllers/accounts');
+const {addProducts, getProductsList, deleteProduct, updateProduct, getProduct} = require('../controllers/products')
 
 router.post('/register', registerUser);
-
 router.post('/login', loginUser);
+router.post('/login/secure', authenticate, (req, res) => res.send({code: 'OK', message: `This is a secure page` }));
 
-router.post('/secure', authenticate, (req, res) => res.end());
-
-router.get('/health', (req, res) => {
-    res.status(200).send({ code: 'OK', message: `API up and running` });
-  });
+router.post('/products', addProducts);
+router.get('/products',  getProductsList);
+router.get ('/products/:id', getProduct)
+router.put('/products/:id', updateProduct);
+router.delete('/products/:id' ,  deleteProduct);
 
 module.exports = router;
