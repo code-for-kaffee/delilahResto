@@ -32,7 +32,7 @@ module.exports.registerUser = (req, res, next) => {
 
 module.exports.loginUser = (req, res) => {
     const { username, password } = req.body;
-     const validate = validateUsers(username, password);
+    const validate = validateUsers(username, password);
     console.log(validate)
    if (!validate) {
         res.json({ error: 'No existe el usuario o contraseña incorrecta' });
@@ -44,18 +44,6 @@ module.exports.loginUser = (req, res) => {
 
     res.status(200).json({ token })
 }
-module.exports.authenticate = (req, res, next) => {
-    try {
-        const token = req.headers.authorization.split(' ')[1];
-        const user = jwt.verify(token, "newPassword");
-        if (user) {
-            req.user = user;
-            return next();
-        }
-    } catch (err) {
-        res.status(401).json({ error: "Error al validar usuario o contraseña" })
-    }
-}
 
 
 validateUsers = async (username, password) => {
@@ -64,6 +52,5 @@ validateUsers = async (username, password) => {
     if (!filterUsers) {
         return false;
     }
-    console.log(filterUsers);
     return filterUsers; 
 }

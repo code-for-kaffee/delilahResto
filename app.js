@@ -8,12 +8,12 @@ const displayRoutes = require('express-routemap');
 server.use(cors())
 server.use(bodyParser.json())
 
-server.get("/products");
+/* server.get("/products");
 server.post("/products");
 server.delete("/products/:id");
 server.put("/products"); 
-
-require('./app/db/db');
+ */
+//require('./app/db/db');
 server.use(router);
 
 

@@ -1,5 +1,6 @@
-const { sequelize } = require('../db/db')
+const { sequelize } = require('../db/db');
 const { QueryTypes } = require('sequelize');
+const {authenticate} =require ('../middleware/authenticationMiddleware')
  
 module.exports.addProducts= (req, res, next) => {
     let data = req;
@@ -11,11 +12,11 @@ module.exports.addProducts= (req, res, next) => {
                 estado: 'Product added sucessfully!!'
             }
             return res.status(200).send({ code: 'OK', message: `${response.estado}` });;
-        } catch (e) {
+        } catch (error) {
             throw res.status(409).send({error})
         }
     };
-    const addProducts = async (product) => {
+    const addProducts = (product) => {
         const productRegister = sequelize.query(
             `INSERT INTO products (product_name, stock, product_price) 
             VALUES('${product.product_name}', '${product.stock}', '${product.product_price}')`,
@@ -47,7 +48,7 @@ module.exports.getProduct = async (req, res) => {
         
     }
 }
-module.exports.deleteProduct = async (req, res, next) =>{
+module.exports.deleteProduct = async (req, res) =>{
     try {
         const productId = req.params.id;        
         await sequelize.query(`DELETE FROM products WHERE id = ${productId}`, {type: QueryTypes.DELETE});
@@ -58,7 +59,7 @@ module.exports.deleteProduct = async (req, res, next) =>{
 
 }
 
-module.exports.updateProduct = async (req, res, next) => {
+module.exports.updateProduct = async (req, res) => {
 try {
     const updateParams = req.body;
     console.log(updateParams);
