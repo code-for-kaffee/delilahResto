@@ -33,6 +33,7 @@ module.exports.registerUser = (req, res, next) => {
 module.exports.loginUser = async (req, res) => {
     const { username, password } = req.body;
     const validateUser = await validateUsers(username, password);
+    const userId = await validateUser.user_id;
     const validateAdmin = await validateAdminUser(username, password);
     if (!validateUser) {
         res.json({ error: 'No existe el usuario o contraseña incorrecta' });
@@ -41,12 +42,14 @@ module.exports.loginUser = async (req, res) => {
     if (validateAdmin) {
         const token = jwt.sign({
             username,
-            validateAdmin
+            validateAdmin,
+            userId
         }, 'newPassword');
         res.status(202).json({ token });
     }else{
     const token = jwt.sign({
-        username
+        username, 
+        userId
     }, 'newPassword');
     res.status(202).json({ token })
 }

@@ -1,6 +1,7 @@
 const { sequelize } = require('../db/db')
 const { QueryTypes } = require('sequelize');
- 
+const { authenticateUser } = require('../middleware/authenticationMiddleware');
+
 
 module.exports.createOrder = async (req, res, next) => {
     const userId = req.body.user_id;
@@ -12,18 +13,11 @@ module.exports.createOrder = async (req, res, next) => {
    res.status(202).json({ message:"orden creada con exito" });  
     }
 
-module.exports.addProductsToOrder = (req, res, next) => { 
- const insertOrderProduct = order.forEach(productId => {
-    sequelize.query(
-    `INSERT INTO orderproducts(order_id, product_id)
-    VALUES('${orderId}', ${productId})`, { type: QueryTypes.INSERT});
-        });
-        return insertOrderProduct;
-      
-}
+
 
 module.exports.getOrders = async (req, res) => {
-    const orders = await sequelize.query(
+    
+  const orders = await sequelize.query(
       `SELECT orders.order_id, orders.order_status, products.product_name FROM orders
       INNER JOIN clients
       ON orders.user_id=clients.user_id
@@ -32,12 +26,13 @@ module.exports.getOrders = async (req, res) => {
       INNER JOIN products
       ON products.product_id=orderproducts.product_id
       `, { type: QueryTypes.SELECT });
-      console.log(orders);
-    res.status(200).json({orders});
+      res.status(200).json({orders});
   };
 
 module.exports.getOrderById = async (req, res) =>{
-  try {   
+   const userId =await authenticateUser(req, res);
+   const arr = []
+   try {
     const orderId = req.params.id;
     const orders = await sequelize.query(
         `SELECT orders.user_id, orders.order_status, orders.pay_method, products.product_name FROM orders
@@ -45,10 +40,14 @@ module.exports.getOrderById = async (req, res) =>{
          ON orderproducts.order_id=orders.order_id
          INNER JOIN products
          ON products.product_id=orderproducts.product_id
-         WHERE user_id=${orderId}
+         WHERE ${orderId}  AND user_id=${userId}
          `, { type: QueryTypes.SELECT });
-        const response = orders;
-        return res.status(200).send({ response }); 
+        const {user_id, order_status, pay_method} = orders[0];
+        orders.forEach(element => {
+          arr.push(element.product_name)
+        });
+        const order= await {user_id:user_id, order_status:order_status, pay_method:pay_method, products_name:arr }
+        return res.status(200).send( order  ); 
     }
     catch(error) {
         error
@@ -62,17 +61,13 @@ module.exports.updateOrder = async (req, res, next) => {
         const orders = await sequelize.query(
             `UPDATE orders SET order_status='${orderStatus}' WHERE order_id=${orderId}
             `, { type: QueryTypes.UPDATE });
-        const response = orders;
-        return res.status(200).send({ message:"Order updated!" }); 
+        return res.status(200).send({ message:"Orden actualizada correctamente" }); 
         
         }
         catch(error) {
             error
     }
 }
-
-// REVISAR
-
  
   const createOrder = async (userId) => {
     const createOrder = sequelize.query(
@@ -80,11 +75,6 @@ module.exports.updateOrder = async (req, res, next) => {
       VALUES('${userId}')`, { type: QueryTypes.INSERT});
       return createOrder;
       
-  };
-  
-  const selectLastOrder = (userId) => {
-    const lastOrder = sequelize.query(`SELECT order_id FROM orders WHERE user_id=${userId} ORDER BY order_id DESC;`);
-    return lastOrder;
   };
   
   const insertOrderProducts = (orderId, productsId) => {

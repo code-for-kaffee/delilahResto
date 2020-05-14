@@ -62,10 +62,9 @@ module.exports.deleteProduct = async (req, res) => {
 module.exports.updateProduct = async (req, res) => {
     try {
         const updateParams = req.body;
-        console.log(updateParams);
         const productId = req.params.id;
-        for (prop in updateParams)
-            await sequelize.query(`UPDATE products SET ${prop} = '${updateParams[prop]}'  WHERE product_id = ${productId}`, { type: QueryTypes.UPDATE });
+        for (prop in updateParams){
+            await sequelize.query(`UPDATE products SET ${prop} = '${updateParams[prop]}'  WHERE product_id = ${productId}`, { type: QueryTypes.UPDATE });}
         return res.status(200).send(`Product updated!`);
     } catch (error) {
         error

@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { loginUser, registerUser } = require('../controllers/accounts');
 const { addProducts, getProductsList, deleteProduct, updateProduct, getProduct } = require('../controllers/products');
 const { authenticate } = require('../middleware/authenticationMiddleware');
-const { addProductsToOrder, getOrders, updateOrder, createOrder, getOrderById } = require('../controllers/orders');
+const { getOrders, updateOrder, createOrder, getOrderById } = require('../controllers/orders');
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
