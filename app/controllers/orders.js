@@ -45,7 +45,7 @@ module.exports.getOrderById = async (req, res) =>{
    const arr = []
    try {
     const orderId = req.params.id;
-    const orders = await sequelize.query(
+    const orders =  sequelize.query(
         `SELECT orders.user_id, orders.order_status, orders.pay_method, products.product_name, orders.order_id, orderproducts.quantity FROM orders
          INNER JOIN orderproducts
          ON orderproducts.order_id=orders.order_id
@@ -54,7 +54,6 @@ module.exports.getOrderById = async (req, res) =>{
          WHERE  orders.order_id=${orderId}`
          , { type: QueryTypes.SELECT });
         const {user_id, order_status, pay_method} = orders[0];
-        console.log(orders);
         orders.forEach(element => {
           arr.push(element.product_name+":"+ element.quantity)
         });

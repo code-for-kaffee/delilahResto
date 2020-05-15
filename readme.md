@@ -19,3 +19,6 @@ Los endpoints son los siguientes:
 /orders > Por ultimo pero no menos importante tenemos el endpoint de orders, en este se podran cargar, actualizar o buscar diferentes ordenes que hayan creado nuestros usuarios
 
 Para utilizar los endpoints podemos importarlos a Postman mediante el archivo llamado DelilahResto.postman_collection.json, el cual tiene algunos ejemplos de que habría que enviar
+
+El proceso para utilizar la base de datos sería, primero registrar un usuario nuevo, luego conectarse para obtener el token (no olvidarse que es importante aclarar si el usuario es administrador o no), luego vamos a crear un producto, lo cual solo se puede realizar como administrador para después finalmente crear una nueva orden.
+
