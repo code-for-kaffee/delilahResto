@@ -11,6 +11,11 @@ con lo cual nos traera las dependencias que necesitamos para correr el proyecto.
 una vez tengamos instaladas todas las dependecias, vamos a la carpeta app/db donde encontraremos el archivo db.js ahi podremos setear nuestra ruta de XAMPP,
 luego ingresaremos a localhost/phpmyadmin donde importaremos el archivo DelilahResto.sql donde estan las tablas para poder correr la API, por otro lado si quereremos utilizar nuestra propia DB, tenemos el archivo querys.sql donde se encuentran las querys necesarias para crear las litas a las cual apuntan los endpoints.
 
+Para pone en funcionanmiento la API, utilizaremos uno de estos dos comandos
+
+nodemon app >> Con esta dependencia va actualizando cada vez que se hace un cambio en algun fichero de la API,
+node app >> No es necesario una dependencia, pero no va a tomar cambios, hay que cerrarlo y volver a abrir para notarlos.
+ 
 Los endpoints son los siguientes:
 
 /register > En este endpoint podremos registrar nuevos usuarios, por defectos los nuevos usuarios ingresan como usuarios sin privilegios.
