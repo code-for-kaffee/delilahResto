@@ -1,16 +1,26 @@
 const { sequelize } = require('../db/db')
 const { QueryTypes } = require('sequelize');
-const { authenticateUser } = require('../middleware/authenticationMiddleware');
+const { authenticateUser, authenticateAdminUser } = require('../middleware/authenticationMiddleware');
 
 
 module.exports.createOrder = async (req, res, next) => {
-    const userId = req.body.user_id;
+  try {
+    
+    const userId =await authenticateUser(req, res);
     const productsId = req.body.products_id;
     const orderId = await createOrder(userId);
     const newOrderId = orderId[0];
     const newOrder = await insertOrderProducts(newOrderId, productsId);
+    
     console.log(newOrder)
-   res.status(202).json({ message:"orden creada con exito" });  
+    if(newOrder == false){
+      res.status(403).json({error})
+    }else{
+   res.status(202).json({ message:"orden creada con exito" });  }
+  } catch (error) {
+    error
+  }
+  
     }
 
 
@@ -31,38 +41,44 @@ module.exports.getOrders = async (req, res) => {
 
 module.exports.getOrderById = async (req, res) =>{
    const userId =await authenticateUser(req, res);
+   const adminUser = await authenticateAdminUser(req, res);
    const arr = []
    try {
     const orderId = req.params.id;
     const orders = await sequelize.query(
-        `SELECT orders.user_id, orders.order_status, orders.pay_method, products.product_name FROM orders
+        `SELECT orders.user_id, orders.order_status, orders.pay_method, products.product_name, orders.order_id, orderproducts.quantity FROM orders
          INNER JOIN orderproducts
          ON orderproducts.order_id=orders.order_id
          INNER JOIN products
          ON products.product_id=orderproducts.product_id
-         WHERE ${orderId}  AND user_id=${userId}
-         `, { type: QueryTypes.SELECT });
+         WHERE  orders.order_id=${orderId}`
+         , { type: QueryTypes.SELECT });
         const {user_id, order_status, pay_method} = orders[0];
+        console.log(orders);
         orders.forEach(element => {
-          arr.push(element.product_name)
+          arr.push(element.product_name+":"+ element.quantity)
         });
+        if(userId === user_id || adminUser === true){
         const order= await {user_id:user_id, order_status:order_status, pay_method:pay_method, products_name:arr }
-        return res.status(200).send( order  ); 
+        return res.status(200).send( order  );
+      }
     }
     catch(error) {
         error
 }
 }
 
-module.exports.updateOrder = async (req, res, next) => {
+module.exports.updateOrder = async (req, res) => {
     try {   
         const orderId = req.params.id;
         const orderStatus = req.body.order_status;
-        const orders = await sequelize.query(
+        const order = await sequelize.query(
             `UPDATE orders SET order_status='${orderStatus}' WHERE order_id=${orderId}
             `, { type: QueryTypes.UPDATE });
-        return res.status(200).send({ message:"Orden actualizada correctamente" }); 
-        
+        if(order[0]!==false){
+        return res.status(200).send({ message:`Orden actualizada correctamente, nuevo estado: ${order}`  });
+        }else{
+          throw res.status(409).send({message: `No existe una orden con ID: ${orderId}`})}
         }
         catch(error) {
             error
@@ -77,11 +93,16 @@ module.exports.updateOrder = async (req, res, next) => {
       
   };
   
-  const insertOrderProducts = (orderId, productsId) => {
-    const insertOrderProduct = productsId.forEach(productId => {
+  const insertOrderProducts = async (orderId, productsId) => {
+    try { 
+    const insertOrderProduct = await productsId.forEach(productId => {
       sequelize.query(
-        `INSERT INTO orderproducts(order_id, product_id)
-        VALUES('${orderId}', ${productId})`, { type: QueryTypes.INSERT});
-    });
-    return insertOrderProduct;
+        `INSERT INTO orderproducts(order_id, product_id, quantity)
+        VALUES('${orderId}', ${productId.product_id}, '${productId.quantity}')`, { type: QueryTypes.INSERT});
+    }); 
+      return insertOrderProduct;
+  } catch (error) {
+      throw res.status(403).JSON({error: "por favor ingrese un id válido"})
+  }
+  
   };

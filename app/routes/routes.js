@@ -13,7 +13,7 @@ router.get ('/products/:id', getProduct)
 router.put('/products/:id', authenticate, updateProduct);
 router.delete('/products/:id', authenticate,  deleteProduct);
 
-router.get('/orders', getOrders);
+router.get('/orders',authenticate, getOrders);
 router.get('/orders/:id', getOrderById)
 router.post('/orders', createOrder);
 router.put('/orders/:id',authenticate, updateOrder);

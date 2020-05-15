@@ -1,28 +1,33 @@
 const jwt = require('jsonwebtoken');
 const { sequelize } = require('../db/db')
 const { QueryTypes } = require('sequelize');
-const bcrypt = require('bcrypt');
 
 
-module.exports.registerUser = (req, res, next) => {
+module.exports.registerUser = (req, res) => {
     let data = req;
     this.register = async () => {
         try {
             const user = data.body;
-            await registroUsuario(user);
+            const {username, password, email} = data.body;
+            console.log(data.body)
+            const validate= await validateUsers(username, password, email);
+            if(validate == false){
+            await registerUser(user);
             const response = {
                 estado: 'Se registró correctamente el usuario'
             }
-            return res.status(201).send({ code: 'OK', message: `${response.estado}` });;
+            return res.status(201).send({ code: 'OK', message: `${response.estado}` });}
+            else{
+                throw res.status(409).send({error: 'Error nombre de usuario o mail duplicado'})
+            }
         } catch (error) {
-            throw res.status(409
-                ).send({error: 'Username or email duplicated'})
+            throw res.status(409).send({error: 'Error nombre de usuario o mail duplicado'})
         }
     };
-    const registroUsuario = async (user) => {
+    const registerUser = async (user) => {
         const registro = sequelize.query(
-            `INSERT INTO clients (username, fullname, email, phone, address, password) 
-            VALUES('${user.username}', '${user.fullname}', '${user.email}', '${user.phone}', '${user.address}', '${user.password}')`,
+            `INSERT INTO clients (username, fullname, email, phone, address, password, admin) 
+            VALUES('${user.username}', '${user.fullname}', '${user.email}', '${user.phone}', '${user.address}', '${user.password}', '${user.admin}')`,
             { type: QueryTypes.INSERT });
         return registro;
     }
@@ -31,10 +36,12 @@ module.exports.registerUser = (req, res, next) => {
 
 
 module.exports.loginUser = async (req, res) => {
-    const { username, password } = req.body;
-    const validateUser = await validateUsers(username, password);
+    const { password, email} = req.body;
+    let username = req.body.username
+    const validateUser = await validateUsers(username, password, email);
     const userId = await validateUser.user_id;
-    const validateAdmin = await validateAdminUser(username, password);
+    const validateAdmin = await validateAdminUser(username, password, email);
+    username = validateUser.username;
     if (!validateUser) {
         res.json({ error: 'No existe el usuario o contraseña incorrecta' });
         return;
@@ -56,20 +63,28 @@ module.exports.loginUser = async (req, res) => {
 }
 
 
-validateUsers = async (username, password) => {
+validateUsers = async (username, password, email) => {
     const users = sequelize.query('SELECT * FROM clients', { type : QueryTypes.SELECT});
-    const [filterUsers] = await users.filter(fila => fila.username === username && fila.password === password);
+    await validateData(users);
+    const [filterUsers] = await users.filter(fila =>( fila.username === username || fila.email === email) && fila.password === password);
     if (!filterUsers) {
         return false;
     }
-   
     return filterUsers; 
 }
-validateAdminUser = async (username, password) => {
+validateAdminUser = async (username, password, email) => {
     const users = sequelize.query('SELECT * FROM clients', { type : QueryTypes.SELECT});
-    const [validateAdmin] = await users.filter(fila => fila.username === username && fila.password === password && fila.admin === 1);
+    const [validateAdmin] = await users.filter(fila => (fila.username === username  || fila.email === email) && fila.password === password && fila.admin === 1);
     if (!validateAdmin){
         return false;
     };
     return true;
+}
+
+validateData= (users) =>{
+if(users.email){
+    return users.email
+}else{
+    return users.username
+}
 }

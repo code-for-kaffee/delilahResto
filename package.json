@@ -4,12 +4,11 @@
   "description": "Proyecto numero 3 de Acámica",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm i body-parser cors express express-routemap jsonwebtoken mysql2 node-pre-gyp nodemon seqlize"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
