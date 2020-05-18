@@ -62,6 +62,10 @@ module.exports.loginUser = async (req, res) => {
 }
 }
 
+module.exports.getUsers = async(req, res) =>{
+    const users = await sequelize.query('SELECT * FROM clients', { type : QueryTypes.SELECT});
+    res.status(202).json({users})
+}
 
 validateUsers = async (username, password, email) => {
     const users = sequelize.query('SELECT * FROM clients', { type : QueryTypes.SELECT});

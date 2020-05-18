@@ -1,11 +1,12 @@
 const router = require('express').Router();
-const { loginUser, registerUser } = require('../controllers/accounts');
+const { loginUser, registerUser, getUsers } = require('../controllers/accounts');
 const { addProducts, getProductsList, deleteProduct, updateProduct, getProduct } = require('../controllers/products');
 const { authenticate } = require('../middleware/authenticationMiddleware');
 const { getOrders, updateOrder, createOrder, getOrderById } = require('../controllers/orders');
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
+router.get('/users',authenticate, getUsers)
 
 router.post('/products', authenticate, addProducts);
 router.get('/products',  getProductsList);

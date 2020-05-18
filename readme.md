@@ -13,8 +13,9 @@ luego ingresaremos a localhost/phpmyadmin donde importaremos el archivo DelilahR
 
 Para pone en funcionanmiento la API, utilizaremos uno de estos dos comandos
 
-nodemon app >> Con esta dependencia va actualizando cada vez que se hace un cambio en algun fichero de la API,
-node app >> No es necesario una dependencia, pero no va a tomar cambios, hay que cerrarlo y volver a abrir para notarlos.
+>>nodemon app >> Con esta dependencia va actualizando cada vez que se hace un cambio en algun fichero de la API,
+
+>>node app >> No es necesario una dependencia, pero no va a tomar cambios, hay que cerrarlo y volver a abrir para notarlos.
  
 Los endpoints son los siguientes:
 
