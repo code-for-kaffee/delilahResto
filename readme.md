@@ -21,6 +21,7 @@ Los endpoints son los siguientes:
 
 /register > En este endpoint podremos registrar nuevos usuarios, por defectos los nuevos usuarios ingresan como usuarios sin privilegios.
 /login > Aqui se verificara si el usuario es admin o no, y se devolvera un token con dichas credenciales
+/users > Aqui se puede obtener una lista con todos los usuarios y sus datos
 /products > En este endpoint se podran crear, actualizar, buscar o eliminar productos, esta ultima solo sera accesible con credenciales de administrador
 /orders > Por ultimo pero no menos importante tenemos el endpoint de orders, en este se podran cargar, actualizar o buscar diferentes ordenes que hayan creado nuestros usuarios
 
