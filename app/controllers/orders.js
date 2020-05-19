@@ -75,13 +75,23 @@ module.exports.updateOrder = async (req, res) => {
             `UPDATE orders SET order_status='${orderStatus}' WHERE order_id=${orderId}
             `, { type: QueryTypes.UPDATE });
         if(order[0]!==false){
-        return res.status(200).send({ message:`Orden actualizada correctamente, nuevo estado: ${order}`  });
+        return res.status(200).send({ message:`Orden actualizada correctamente, nuevo estado: ${order}` });
         }else{
           throw res.status(409).send({message: `No existe una orden con ID: ${orderId}`})}
         }
         catch(error) {
             error
     }
+}
+module.exports.deleteOrder = async (req, res) =>{
+  try {
+    const orderId = req.params.id;
+    const order = await sequelize.query( `DELETE FROM orders WHERE order_id=${orderId}`, {type: QueryTypes.DELETE});
+    console.log(order)
+    res.status(203).json({ message: `La orden ${orderId} fue borrado con éxito` })
+  } catch (error) {
+    res.status(403).json({message: `No existe una orden con ese id`})
+  }
 }
  
   const createOrder = async (userId) => {
